@@ -87,33 +87,15 @@ if not dispatches_df.empty:
             title=f'Tickets Per Site in {selected_breakdown_month}'
         )
         st.altair_chart(bar_chart_site, use_container_width=True)
-    
-    st.markdown("---")
-        # Calculate tickets per site
-        tickets_per_site = selected_breakdown_df.groupby('Site').agg(
-            total_tickets=('CheckInDate', 'count')
-        ).reset_index()
-
+        
+        # --- NEW CODE ADDED HERE ---
+        st.markdown("---")
+        
         # New: Calculate average time to close per site
         avg_time_per_site = selected_breakdown_df.groupby('Site').agg(
             avg_hours=('Hours', 'mean')
         ).reset_index()
 
-        # Create the bar chart
-        bar_chart_site = alt.Chart(tickets_per_site).mark_bar().encode(
-            x=alt.X('Site', title='Site', sort=None),
-            y=alt.Y('total_tickets', title='Total Tickets'),
-            tooltip=[
-                alt.Tooltip('Site', title='Site'),
-                alt.Tooltip('total_tickets', title='Total Tickets', format=',')
-            ]
-        ).properties(
-            title=f'Tickets Per Site in {selected_breakdown_month}'
-        )
-        st.altair_chart(bar_chart_site, use_container_width=True)
-        
-        # New: Add a horizontal line and a new chart for Avg Time to Close
-        st.markdown("---")
         st.subheader(f"Avg Time to Close Per Site for {selected_breakdown_month}")
 
         bar_chart_avg_time = alt.Chart(avg_time_per_site).mark_bar().encode(
@@ -127,8 +109,9 @@ if not dispatches_df.empty:
             title=f'Avg. Time to Close Per Site in {selected_breakdown_month}'
         )
         st.altair_chart(bar_chart_avg_time, use_container_width=True)
-        st.markdown("---")
-
+        # --- END OF NEW CODE ---
+    
+    st.markdown("---")
 
     # --- Monthly Trend Analysis with dynamic chart layering ---
     with st.expander("### **Monthly Trend Analysis**"):
@@ -323,5 +306,5 @@ if not dispatches_df.empty:
                 st.info("Select a subtype from the dropdown or the pie chart to view the Site Breakdown.")
 
 else:
-
     st.warning("No data found in the `live_dispatches` table. Please check your database connection and table name.")
+
