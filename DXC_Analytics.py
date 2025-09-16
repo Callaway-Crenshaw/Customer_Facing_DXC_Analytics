@@ -43,9 +43,9 @@ if not dispatches_df.empty:
     # --- Project Overview Section ---
     with st.expander("### **Project Overview**"):
         # Placeholder for defining site categories
-        mission_critical_sites = ['Site A', 'Site B']  # <--- REPLACE WITH YOUR MISSION CRITICAL SITES
-        entity_essential_sites = ['Site C', 'Site D']  # <--- REPLACE WITH YOUR ENTITY ESSENTIAL SITES
-        normal_sites = ['Site E', 'Site F']            # <--- REPLACE WITH YOUR NORMAL SITES
+        mission_critical_sites = ['AQN', 'BOI', 'COR', 'IND', 'PAL', 'SDG'] 
+        entity_essential_sites = ['FTC', 'OTA', 'TEX', 'VAA', 'VCS'] 
+        normal_sites = ['NSH', 'NSV', 'OSC', 'SCA', 'SDN', 'SDS', 'SVU', 'TNO', 'VNC', 'WEC', 'ALF', 'AUP', 'AUT', 'BRM', 'COT', 'DCA', 'DCP', 'HEV', 'MIS', 'NNY']
         
         # Categorize sites in the DataFrame
         dispatches_df['site_category'] = 'Normal Sites'
@@ -396,4 +396,5 @@ if not dispatches_df.empty:
 
 else:
     st.warning("No data found in the `live_dispatches` table. Please check your database connection and table name.")
+
 
