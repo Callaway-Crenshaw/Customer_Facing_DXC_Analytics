@@ -39,6 +39,97 @@ if not dispatches_df.empty:
     
     # Add month_year_str for filtering and grouping
     dispatches_df['month_year_str'] = dispatches_df['CheckInDate'].dt.to_period('M').astype(str)
+    
+    # --- Project Overview Section ---
+    with st.expander("### **Project Overview**"):
+        # Placeholder for defining site categories
+        mission_critical_sites = ['Site A', 'Site B']  # <--- REPLACE WITH YOUR MISSION CRITICAL SITES
+        entity_essential_sites = ['Site C', 'Site D']  # <--- REPLACE WITH YOUR ENTITY ESSENTIAL SITES
+        normal_sites = ['Site E', 'Site F']            # <--- REPLACE WITH YOUR NORMAL SITES
+        
+        # Categorize sites in the DataFrame
+        dispatches_df['site_category'] = 'Normal Sites'
+        dispatches_df.loc[dispatches_df['Site'].isin(mission_critical_sites), 'site_category'] = 'Mission Critical Sites'
+        dispatches_df.loc[dispatches_df['Site'].isin(entity_essential_sites), 'site_category'] = 'Entity Essential Sites'
+
+        col1, col2, col3 = st.columns(3)
+        
+        # --- Column 1: Mission Critical Sites ---
+        with col1:
+            st.markdown("#### Mission Critical Sites")
+            
+            # Filter data for Mission Critical Sites
+            mc_df = dispatches_df[dispatches_df['site_category'] == 'Mission Critical Sites']
+            
+            # P1/P2 Tickets
+            p1p2_mc = mc_df[mc_df['SLA'].isin(['2 Hour', '4 Hour'])]
+            avg_time_p1p2_mc = p1p2_mc['Hours'].mean()
+            total_tickets_p1p2_mc = len(p1p2_mc)
+            
+            st.metric(label="P1/P2 Tickets - Avg. Time to Close", value=f"{avg_time_p1p2_mc:.2f} hrs" if not pd.isna(avg_time_p1p2_mc) else "N/A")
+            st.metric(label="P1/P2 Tickets - Total Tickets", value=total_tickets_p1p2_mc)
+            
+            st.markdown("---")
+            
+            # P3/P4 Tickets
+            p3p4_mc = mc_df[mc_df['SLA'].isin(['2 Day', '4 Day'])]
+            avg_time_p3p4_mc = p3p4_mc['Hours'].mean()
+            total_tickets_p3p4_mc = len(p3p4_mc)
+            
+            st.metric(label="P3/P4 Tickets - Avg. Time to Close", value=f"{avg_time_p3p4_mc:.2f} hrs" if not pd.isna(avg_time_p3p4_mc) else "N/A")
+            st.metric(label="P3/P4 Tickets - Total Tickets", value=total_tickets_p3p4_mc)
+            
+        # --- Column 2: Entity Essential Sites ---
+        with col2:
+            st.markdown("#### Entity Essential Sites")
+            
+            # Filter data for Entity Essential Sites
+            ee_df = dispatches_df[dispatches_df['site_category'] == 'Entity Essential Sites']
+            
+            # P1/P2 Tickets
+            p1p2_ee = ee_df[ee_df['SLA'].isin(['2 Hour', '4 Hour'])]
+            avg_time_p1p2_ee = p1p2_ee['Hours'].mean()
+            total_tickets_p1p2_ee = len(p1p2_ee)
+            
+            st.metric(label="P1/P2 Tickets - Avg. Time to Close", value=f"{avg_time_p1p2_ee:.2f} hrs" if not pd.isna(avg_time_p1p2_ee) else "N/A")
+            st.metric(label="P1/P2 Tickets - Total Tickets", value=total_tickets_p1p2_ee)
+            
+            st.markdown("---")
+            
+            # P3/P4 Tickets
+            p3p4_ee = ee_df[ee_df['SLA'].isin(['2 Day', '4 Day'])]
+            avg_time_p3p4_ee = p3p4_ee['Hours'].mean()
+            total_tickets_p3p4_ee = len(p3p4_ee)
+            
+            st.metric(label="P3/P4 Tickets - Avg. Time to Close", value=f"{avg_time_p3p4_ee:.2f} hrs" if not pd.isna(avg_time_p3p4_ee) else "N/A")
+            st.metric(label="P3/P4 Tickets - Total Tickets", value=total_tickets_p3p4_ee)
+            
+        # --- Column 3: Normal Sites ---
+        with col3:
+            st.markdown("#### Normal Sites")
+            
+            # Filter data for Normal Sites
+            ns_df = dispatches_df[dispatches_df['site_category'] == 'Normal Sites']
+            
+            # P1/P2 Tickets
+            p1p2_ns = ns_df[ns_df['SLA'].isin(['2 Hour', '4 Hour'])]
+            avg_time_p1p2_ns = p1p2_ns['Hours'].mean()
+            total_tickets_p1p2_ns = len(p1p2_ns)
+            
+            st.metric(label="P1/P2 Tickets - Avg. Time to Close", value=f"{avg_time_p1p2_ns:.2f} hrs" if not pd.isna(avg_time_p1p2_ns) else "N/A")
+            st.metric(label="P1/P2 Tickets - Total Tickets", value=total_tickets_p1p2_ns)
+            
+            st.markdown("---")
+            
+            # P3/P4 Tickets
+            p3p4_ns = ns_df[ns_df['SLA'].isin(['2 Day', '4 Day'])]
+            avg_time_p3p4_ns = p3p4_ns['Hours'].mean()
+            total_tickets_p3p4_ns = len(p3p4_ns)
+            
+            st.metric(label="P3/P4 Tickets - Avg. Time to Close", value=f"{avg_time_p3p4_ns:.2f} hrs" if not pd.isna(avg_time_p3p4_ns) else "N/A")
+            st.metric(label="P3/P4 Tickets - Total Tickets", value=total_tickets_p3p4_ns)
+
+    st.markdown("---")
 
     # --- Monthly Breakdown Section with Month Selector and Bar Chart ---
     with st.expander("### **Monthly Breakdown**"):
@@ -88,15 +179,14 @@ if not dispatches_df.empty:
         )
         st.altair_chart(bar_chart_site, use_container_width=True)
         
-        # --- NEW CODE ADDED HERE ---
+        # New: Add a horizontal line and a new chart for Avg Time to Close
         st.markdown("---")
-        
+        st.subheader(f"Avg Time to Close Per Site for {selected_breakdown_month}")
+
         # New: Calculate average time to close per site
         avg_time_per_site = selected_breakdown_df.groupby('Site').agg(
             avg_hours=('Hours', 'mean')
         ).reset_index()
-
-        st.subheader(f"Avg Time to Close Per Site for {selected_breakdown_month}")
 
         bar_chart_avg_time = alt.Chart(avg_time_per_site).mark_bar().encode(
             x=alt.X('Site', title='Site', sort=None),
@@ -109,7 +199,6 @@ if not dispatches_df.empty:
             title=f'Avg. Time to Close Per Site in {selected_breakdown_month}'
         )
         st.altair_chart(bar_chart_avg_time, use_container_width=True)
-        # --- END OF NEW CODE ---
     
     st.markdown("---")
 
